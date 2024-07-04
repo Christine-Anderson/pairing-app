@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as path from 'path';
 
 export class PairingAppStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -8,16 +9,9 @@ export class PairingAppStack extends cdk.Stack {
 
         // Define the Lambda function resource
         const myFunction = new lambda.Function(this, "HelloWorldFunction", {
-                runtime: lambda.Runtime.NODEJS_20_X,
-                handler: "index.handler",
-                code: lambda.Code.fromInline(`
-                    exports.handler = async function(event) {
-                        return {
-                        statusCode: 200,
-                        body: JSON.stringify('Hello World!'),
-                        };
-                    };
-                `),
+                runtime: lambda.Runtime.PROVIDED_AL2023,
+                handler: "main",
+                code: lambda.Code.fromAsset(path.join(__dirname, '../lambda/function.zip')),
             });
 
         // Define the Lambda function URL resource
