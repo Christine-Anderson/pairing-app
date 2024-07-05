@@ -1,9 +1,14 @@
 package api
 
 import (
-	"fmt"
+	"encoding/json"
 	"lambda/database"
+	"lambda/types"
+
 	"net/http"
+	"net/mail"
+
+	"github.com/google/uuid"
 
 	"github.com/aws/aws-lambda-go/events"
 )
@@ -18,14 +23,57 @@ func NewApiHandler(databaseStore database.DynamoDBClient) ApiHandler {
 	}
 }
 
-func (handler ApiHandler) CreateGroup(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	err := handler.databaseStore.CreateGroupDB()
-	fmt.Println(err)
+func isValidEmail(email string) bool {
+	_, err := mail.ParseAddress(email)
+	return err == nil
+}
+
+func errorResponse(message string, statusCode int) events.APIGatewayProxyResponse {
+	return events.APIGatewayProxyResponse{
+		Body:       message,
+		StatusCode: statusCode,
+	}
+}
+
+func createGroupResponse(groupId string, groupName string) (events.APIGatewayProxyResponse, error) {
+	responseBody := map[string]string{
+		"groupId":   groupId,
+		"groupName": groupName,
+	}
+
+	jsonResponseBody, err := json.Marshal(responseBody)
+	if err != nil {
+		return errorResponse("Error creating group response", http.StatusInternalServerError), err
+	}
 
 	return events.APIGatewayProxyResponse{
-		Body:       "Group created successfully",
-		StatusCode: http.StatusCreated,
+		Body:       string(jsonResponseBody),
+		StatusCode: http.StatusOK,
 	}, nil
+}
+
+func (handler ApiHandler) CreateGroup(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	var groupDetails types.CreateGroupDetails
+
+	err := json.Unmarshal([]byte(request.Body), &groupDetails)
+	if err != nil {
+		return errorResponse("Invalid Request: Error unmarshaling request body: "+err.Error(), http.StatusBadRequest), err
+	}
+
+	if groupDetails.Name == "" || !isValidEmail(groupDetails.Email) || groupDetails.GroupName == "" {
+		return errorResponse("Invalid Request: Name, Email, or GroupName is missing or invalid", http.StatusBadRequest), err
+	}
+
+	groupId := uuid.New()
+	newGroup := types.NewGroup(groupId.String(), groupDetails)
+	dbErr := handler.databaseStore.AddGroup(newGroup)
+	if dbErr != nil {
+		return errorResponse("Error adding group to database: "+dbErr.Error(), http.StatusInternalServerError), err
+	}
+
+	// TODO send email with link to group page w/ JWT and groupId
+
+	return createGroupResponse(groupId.String(), groupDetails.GroupName)
 }
 
 func (handler ApiHandler) JoinGroup(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {

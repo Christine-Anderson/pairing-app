@@ -10,7 +10,7 @@ import (
 )
 
 func HandleLambda(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	db := database.NewDynamoDB()
+	db := database.NewDynamoDB("MyGroupTable")
 	apiHandler := api.NewApiHandler(db)
 
 	switch request.Path {
