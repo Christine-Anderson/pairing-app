@@ -14,6 +14,7 @@ export class PairingAppStack extends cdk.Stack {
                 name: "groupId",
                 type: dynamodb.AttributeType.STRING
             },
+            tableName: "MyGroupTable"
         });
 
         const myFunction = new lambda.Function(this, "myLambdaFunction", {
