@@ -1,19 +1,28 @@
-import * as cdk from 'aws-cdk-lib';
-import { Construct } from 'constructs';
-import * as apigateway from 'aws-cdk-lib/aws-apigateway';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as path from 'path';
+import * as cdk from "aws-cdk-lib";
+import { Construct } from "constructs";
+import * as apigateway from "aws-cdk-lib/aws-apigateway";
+import * as lambda from "aws-cdk-lib/aws-lambda";
+import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
+import * as path from "path";
 
 export class PairingAppStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
 
-        // Define the Lambda function resource
+        const table = new dynamodb.Table(this, "MyGroupTable", {
+            partitionKey: { 
+                name: "groupId",
+                type: dynamodb.AttributeType.STRING
+            },
+        });
+
         const myFunction = new lambda.Function(this, "myLambdaFunction", {
-                runtime: lambda.Runtime.PROVIDED_AL2023,
-                handler: "main",
-                code: lambda.Code.fromAsset(path.join(__dirname, '../lambda/function.zip')),
-            });
+            runtime: lambda.Runtime.PROVIDED_AL2023,
+            handler: "main",
+            code: lambda.Code.fromAsset(path.join(__dirname, "../lambda/function.zip")),
+        });
+
+        table.grantReadWriteData(myFunction)
 
         const api = new apigateway.RestApi(this, "myApiGateway", {
             defaultCorsPreflightOptions: {
