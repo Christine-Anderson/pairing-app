@@ -52,6 +52,18 @@ func createGroupResponse(groupId string, groupName string) (events.APIGatewayPro
 	}, nil
 }
 
+func groupDetailsResponse(group types.Group) (events.APIGatewayProxyResponse, error) {
+	jsonResponseBody, err := json.Marshal(group)
+	if err != nil {
+		return errorResponse("Error creating group response", http.StatusInternalServerError), err
+	}
+
+	return events.APIGatewayProxyResponse{
+		Body:       string(jsonResponseBody),
+		StatusCode: http.StatusOK,
+	}, nil
+}
+
 func (handler ApiHandler) CreateGroup(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	var groupDetails types.CreateGroupDetails
 
@@ -61,7 +73,7 @@ func (handler ApiHandler) CreateGroup(request events.APIGatewayProxyRequest) (ev
 	}
 
 	if groupDetails.Name == "" || !isValidEmail(groupDetails.Email) || groupDetails.GroupName == "" {
-		return errorResponse("Invalid Request: Name, Email, or GroupName is missing or invalid", http.StatusBadRequest), err
+		return errorResponse("Invalid Request: Name, Email, or Group Name is missing or invalid", http.StatusBadRequest), err
 	}
 
 	groupId := uuid.New()
@@ -84,10 +96,13 @@ func (handler ApiHandler) JoinGroup(request events.APIGatewayProxyRequest) (even
 }
 
 func (handler ApiHandler) GroupDetails(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	return events.APIGatewayProxyResponse{
-		Body:       "Group details",
-		StatusCode: http.StatusOK,
-	}, nil
+	groupId := request.PathParameters["groupId"]
+	groupDetails, err := handler.databaseStore.FetchGroupById(groupId)
+	if err != nil {
+		return errorResponse("Error fetching group from database: "+err.Error(), http.StatusInternalServerError), err
+	}
+
+	return groupDetailsResponse(groupDetails)
 }
 
 func (handler ApiHandler) PerformMatching(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {

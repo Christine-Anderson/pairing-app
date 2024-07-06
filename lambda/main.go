@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"lambda/api"
 	"lambda/database"
 	"net/http"
@@ -9,11 +11,19 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
-func HandleLambda(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	fmt.Printf("Processing request data for request %s.\n", request.RequestContext.RequestID)
+	fmt.Printf("Body size = %d.\n", len(request.Body))
+
+	fmt.Println("Headers:")
+	for key, value := range request.Headers {
+		fmt.Printf("    %s: %s\n", key, value)
+	}
+
 	db := database.NewDynamoDB("MyGroupTable")
 	apiHandler := api.NewApiHandler(db)
 
-	switch request.Path {
+	switch request.Resource {
 	case "/create-group":
 		return apiHandler.CreateGroup(request)
 	case "/join-group":
@@ -31,5 +41,5 @@ func HandleLambda(request events.APIGatewayProxyRequest) (events.APIGatewayProxy
 }
 
 func main() {
-	lambda.Start(HandleLambda)
+	lambda.Start(handleRequest)
 }
