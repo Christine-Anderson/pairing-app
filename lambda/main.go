@@ -6,10 +6,12 @@ import (
 	"lambda/api"
 	"lambda/database"
 	"lambda/email"
+	"lambda/util"
 	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/joho/godotenv"
 )
 
 func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -21,13 +23,16 @@ func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 		fmt.Printf("    %s: %s\n", key, value)
 	}
 
+	envErr := godotenv.Load()
+	if envErr != nil {
+		return util.ErrorResponse("Internal Server Error: "+envErr.Error(), http.StatusInternalServerError), envErr
+	}
+
 	db := database.NewDynamoDB("MyGroupTable")
-	emailService, err := email.NewEmailService()
-	if err != nil {
-		return events.APIGatewayProxyResponse{
-			Body:       "Email service error",
-			StatusCode: http.StatusInternalServerError,
-		}, nil
+	emailService, esErr := email.NewEmailService()
+
+	if esErr != nil {
+		return util.ErrorResponse("Internal Server Error: "+esErr.Error(), http.StatusInternalServerError), esErr
 	}
 	apiHandler := api.NewApiHandler(db, emailService)
 
@@ -43,10 +48,7 @@ func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 	case "/match":
 		return apiHandler.PerformMatching(request)
 	default:
-		return events.APIGatewayProxyResponse{
-			Body:       "Not found",
-			StatusCode: http.StatusNotFound,
-		}, nil
+		return util.ErrorResponse("Resource Not found", http.StatusNotFound), fmt.Errorf("Resource Not Found")
 	}
 }
 
