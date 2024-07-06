@@ -1,6 +1,7 @@
 package database
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"lambda/types"
@@ -36,8 +37,8 @@ func (client DynamoDBClient) AddGroup(newGroup types.Group) error {
 	}
 
 	input := &dynamodb.PutItemInput{
-		Item:      item,
 		TableName: aws.String(client.tableName),
+		Item:      item,
 	}
 
 	_, err = client.databaseStore.PutItem(input)
@@ -74,4 +75,35 @@ func (client DynamoDBClient) FetchGroupById(groupId string) (types.Group, error)
 		return group, fmt.Errorf("error marshalling item: %w", err)
 	}
 	return group, nil
+}
+
+func (client DynamoDBClient) UpdateGroup(updateGroup types.Group) error {
+	groupMembersJSON, err := json.Marshal(updateGroup.GroupMembers)
+	if err != nil {
+		return fmt.Errorf("error marshalling group members: %w", err)
+	}
+
+	input := &dynamodb.UpdateItemInput{
+		TableName: aws.String(client.tableName),
+		Key: map[string]*dynamodb.AttributeValue{
+			"groupId": {
+				S: aws.String(updateGroup.GroupId),
+			},
+		},
+		UpdateExpression: aws.String("set Members = :m"),
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":m": {
+				S: aws.String(string(groupMembersJSON)),
+			},
+		},
+		ReturnValues: aws.String("UPDATED_NEW"),
+	}
+
+	_, err = client.databaseStore.UpdateItem(input)
+	if err != nil {
+		return fmt.Errorf("error updating item: %w", err)
+
+	}
+
+	return nil
 }
