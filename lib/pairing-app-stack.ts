@@ -42,10 +42,10 @@ export class PairingAppStack extends cdk.Stack {
         joinGroupResource.addMethod("POST", integration);
 
         const groupDetailsResource = api.root.addResource("group-details");
-        groupDetailsResource.addResource("{groupId}");
-        groupDetailsResource.addMethod("POST", integration);
+        const groupIdResource = groupDetailsResource.addResource("{groupId}");
+        groupIdResource.addMethod("GET", integration);
 
         const performMatchingResource = api.root.addResource("match");
-        performMatchingResource.addMethod("POST", integration);
+        performMatchingResource.addMethod("GET", integration);
     }
 }
