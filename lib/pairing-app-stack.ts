@@ -35,6 +35,9 @@ export class PairingAppStack extends cdk.Stack {
 
         const integration = new apigateway.LambdaIntegration(myFunction)
 
+        const verfiyEmailResource = api.root.addResource("verify-email");
+        verfiyEmailResource.addMethod("POST", integration);
+
         const createGroupResource = api.root.addResource("create-group");
         createGroupResource.addMethod("POST", integration);
 

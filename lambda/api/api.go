@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"lambda/database"
+	"lambda/email"
 	"lambda/types"
 
 	"net/http"
@@ -15,11 +16,13 @@ import (
 
 type ApiHandler struct {
 	databaseStore database.DynamoDBClient
+	emailService  email.EmailService
 }
 
-func NewApiHandler(databaseStore database.DynamoDBClient) ApiHandler {
+func NewApiHandler(databaseStore database.DynamoDBClient, emailService email.EmailService) ApiHandler {
 	return ApiHandler{
 		databaseStore: databaseStore,
+		emailService:  emailService,
 	}
 }
 
@@ -43,6 +46,13 @@ func errorResponse(message string, statusCode int) events.APIGatewayProxyRespons
 	}
 }
 
+func verifyEmailSuccessResponse(email string) (events.APIGatewayProxyResponse, error) {
+	responseBody := map[string]string{
+		"email": email,
+	}
+	return successResponse(responseBody)
+}
+
 func groupSuccessResponse(groupId string, groupName string) (events.APIGatewayProxyResponse, error) {
 	responseBody := map[string]string{
 		"groupId":   groupId,
@@ -63,6 +73,26 @@ func successResponse(responseBody any) (events.APIGatewayProxyResponse, error) {
 	}, nil
 }
 
+func (handler ApiHandler) VerifyEmail(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	var groupDetails types.CreateGroupDetails
+
+	err := json.Unmarshal([]byte(request.Body), &groupDetails)
+	if err != nil {
+		return errorResponse("Invalid Request: Error unmarshaling request body: "+err.Error(), http.StatusBadRequest), err
+	}
+
+	if !isValidEmail(groupDetails.Email) {
+		return errorResponse("Invalid Request: Email is missing or invalid", http.StatusBadRequest), err
+	}
+
+	verifErr := handler.emailService.SendVerificationEmail(groupDetails.Email)
+	if verifErr != nil {
+		return errorResponse("Error verifying email: "+verifErr.Error(), http.StatusInternalServerError), err
+	}
+
+	return verifyEmailSuccessResponse(groupDetails.Email)
+}
+
 func (handler ApiHandler) CreateGroup(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	var groupDetails types.CreateGroupDetails
 
@@ -71,8 +101,8 @@ func (handler ApiHandler) CreateGroup(request events.APIGatewayProxyRequest) (ev
 		return errorResponse("Invalid Request: Error unmarshaling request body: "+err.Error(), http.StatusBadRequest), err
 	}
 
-	if groupDetails.Name == "" || !isValidEmail(groupDetails.Email) || groupDetails.GroupName == "" {
-		return errorResponse("Invalid Request: Name, Email, or Group Name is missing or invalid", http.StatusBadRequest), err
+	if groupDetails.Name == "" || groupDetails.GroupName == "" {
+		return errorResponse("Invalid Request: Name or Group Name is missing", http.StatusBadRequest), err
 	}
 
 	groupId := uuid.New()
@@ -82,7 +112,10 @@ func (handler ApiHandler) CreateGroup(request events.APIGatewayProxyRequest) (ev
 		return errorResponse("Error adding group to database: "+dbErr.Error(), http.StatusInternalServerError), err
 	}
 
-	// TODO send email with link to group page w/ JWT and groupId
+	emailErr := handler.emailService.SendConfirmationEmail(newGroup)
+	if emailErr != nil {
+		return errorResponse("Error sending confirmation email: "+emailErr.Error(), http.StatusInternalServerError), err
+	}
 
 	return groupSuccessResponse(groupId.String(), groupDetails.GroupName)
 }
@@ -93,9 +126,9 @@ func (handler ApiHandler) JoinGroup(request events.APIGatewayProxyRequest) (even
 	if err != nil {
 		return errorResponse("Invalid Request: Error unmarshaling request body: "+err.Error(), http.StatusBadRequest), err
 	}
-	// groupId, uuidErr := uuid.FromBytes([]byte(groupDetails.GroupId)) todo delete
-	if groupDetails.Name == "" || !isValidEmail(groupDetails.Email) || !isValidUUID(groupDetails.GroupId) {
-		return errorResponse("Invalid Request: Name, Email, or Group ID is missing or invalid", http.StatusBadRequest), err
+
+	if groupDetails.Name == "" || !isValidUUID(groupDetails.GroupId) {
+		return errorResponse("Invalid Request: Name or Group ID is missing or invalid", http.StatusBadRequest), err
 	}
 
 	groupToUpdate, err := handler.databaseStore.FetchGroupById(groupDetails.GroupId)

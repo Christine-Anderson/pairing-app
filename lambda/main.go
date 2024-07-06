@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"lambda/api"
 	"lambda/database"
+	"lambda/email"
 	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -21,9 +22,18 @@ func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 	}
 
 	db := database.NewDynamoDB("MyGroupTable")
-	apiHandler := api.NewApiHandler(db)
+	emailService, err := email.NewEmailService()
+	if err != nil {
+		return events.APIGatewayProxyResponse{
+			Body:       "Email service error",
+			StatusCode: http.StatusInternalServerError,
+		}, nil
+	}
+	apiHandler := api.NewApiHandler(db, emailService)
 
 	switch request.Resource {
+	case "/verify-email":
+		return apiHandler.VerifyEmail(request)
 	case "/create-group":
 		return apiHandler.CreateGroup(request)
 	case "/join-group":
