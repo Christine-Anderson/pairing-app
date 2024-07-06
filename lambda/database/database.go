@@ -90,7 +90,7 @@ func (client DynamoDBClient) UpdateGroup(updateGroup types.Group) error {
 				S: aws.String(updateGroup.GroupId),
 			},
 		},
-		UpdateExpression: aws.String("set Members = :m"),
+		UpdateExpression: aws.String("set groupMembers = :m"),
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
 			":m": {
 				S: aws.String(string(groupMembersJSON)),
