@@ -142,6 +142,13 @@ func (handler ApiHandler) JoinGroup(request events.APIGatewayProxyRequest) (even
 
 func (handler ApiHandler) GroupDetails(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	groupId := request.PathParameters["groupId"]
+	tokenString := request.QueryStringParameters["jwt"]
+
+	tokenErr := util.VerifyToken(tokenString, groupId)
+	if tokenErr != nil {
+		return util.ErrorResponse("Unauthorized: "+tokenErr.Error(), http.StatusUnauthorized), tokenErr
+	}
+
 	groupDetails, dbFetchErr := handler.databaseStore.FetchGroupById(groupId)
 	if dbFetchErr != nil {
 		return util.ErrorResponse("Error fetching group from database: "+dbFetchErr.Error(), http.StatusInternalServerError), dbFetchErr

@@ -46,7 +46,14 @@ export class PairingAppStack extends cdk.Stack {
 
         const groupDetailsResource = api.root.addResource("group-details");
         const groupIdResource = groupDetailsResource.addResource("{groupId}");
-        groupIdResource.addMethod("GET", integration);
+        groupIdResource.addMethod("GET", integration, 
+            {
+                requestParameters: {
+                    "method.request.path.groupId": true,
+                    "method.request.querystring.jwt": true, 
+                },
+            }
+        );
 
         const performMatchingResource = api.root.addResource("match");
         performMatchingResource.addMethod("GET", integration);

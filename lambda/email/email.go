@@ -2,6 +2,9 @@ package email
 
 import (
 	"lambda/types"
+	"lambda/util"
+	"net/url"
+	"os"
 
 	"fmt"
 
@@ -11,10 +14,8 @@ import (
 )
 
 const (
-	Sender = "pairwisenoreply@gmail.com"
-
+	Sender  = "pairwisenoreply@gmail.com"
 	Subject = "Your PairWise Group Has Been Created"
-
 	CharSet = "UTF-8"
 )
 
@@ -55,9 +56,16 @@ func (es EmailService) SendVerificationEmail(email string) error {
 }
 
 func (es EmailService) SendConfirmationEmail(group types.Group) error {
-	recipient := group.GroupMembers[0]
+	baseURL := os.Getenv("BASE_URL")
+	endpoint := fmt.Sprintf(`/group-details/%s`, group.GroupId)
 
-	magicLink := "todo" // todo link to group page w/ JWT
+	recipient := group.GroupMembers[0]
+	jwt, jwtErr := util.CreateToken(group.GroupId)
+	if jwtErr != nil {
+		return jwtErr
+	}
+
+	magicLink := baseURL + endpoint + "?jwt=" + url.QueryEscape(jwt)
 
 	htmlBody := fmt.Sprintf(
 		`<p>Hi %s,</p>
@@ -98,7 +106,6 @@ func (es EmailService) SendConfirmationEmail(group types.Group) error {
 	}
 
 	result, sendEmailErr := es.emailService.SendEmail(input)
-
 	if sendEmailErr != nil {
 		return sendEmailErr
 	}
