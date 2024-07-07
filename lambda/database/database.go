@@ -1,7 +1,6 @@
 package database
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"lambda/types"
@@ -77,32 +76,31 @@ func (client DynamoDBClient) FetchGroupById(groupId string) (types.Group, error)
 	return group, nil
 }
 
-func (client DynamoDBClient) UpdateGroup(updateGroup types.Group) error {
-	groupMembersJSON, err := json.Marshal(updateGroup.GroupMembers)
-	if err != nil {
-		return fmt.Errorf("error marshalling group members: %w", err)
-	}
-
+func (client DynamoDBClient) AddGroupMember(groupId string, newMemberName string, newMemberEmail string) error {
 	input := &dynamodb.UpdateItemInput{
 		TableName: aws.String(client.tableName),
 		Key: map[string]*dynamodb.AttributeValue{
 			"groupId": {
-				S: aws.String(updateGroup.GroupId),
+				S: aws.String(groupId),
 			},
 		},
-		UpdateExpression: aws.String("set groupMembers = :m"),
+		UpdateExpression: aws.String("set groupMembers = list_append(groupMembers, :m)"),
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
 			":m": {
-				S: aws.String(string(groupMembersJSON)),
+				L: []*dynamodb.AttributeValue{
+					{M: map[string]*dynamodb.AttributeValue{
+						"name":  {S: aws.String(newMemberName)},
+						"email": {S: aws.String(newMemberEmail)},
+					}},
+				},
 			},
 		},
 		ReturnValues: aws.String("UPDATED_NEW"),
 	}
 
-	_, err = client.databaseStore.UpdateItem(input)
+	_, err := client.databaseStore.UpdateItem(input)
 	if err != nil {
 		return fmt.Errorf("error updating item: %w", err)
-
 	}
 
 	return nil
