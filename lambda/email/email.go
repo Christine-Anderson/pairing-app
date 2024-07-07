@@ -1,12 +1,12 @@
 package email
 
 import (
+	"fmt"
+	"lambda/jwt"
 	"lambda/types"
-	"lambda/util"
+	"log"
 	"net/url"
 	"os"
-
-	"fmt"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -51,16 +51,16 @@ func (es EmailService) SendVerificationEmail(email string) error {
 		return err
 	}
 
-	fmt.Println("Verification sent to address: " + email)
+	log.Printf("Verification sent to address: %s", email)
 	return nil
 }
 
 func (es EmailService) SendConfirmationEmail(group types.Group) error {
 	baseURL := os.Getenv("BASE_URL")
-	endpoint := fmt.Sprintf(`/group-details/%s`, group.GroupId)
+	endpoint := fmt.Sprintf(`group-details/%s`, group.GroupId)
 
 	recipient := group.GroupMembers[0]
-	jwt, jwtErr := util.CreateToken(group.GroupId)
+	jwt, jwtErr := jwt.CreateToken(group.GroupId)
 	if jwtErr != nil {
 		return jwtErr
 	}
@@ -110,8 +110,11 @@ func (es EmailService) SendConfirmationEmail(group types.Group) error {
 		return sendEmailErr
 	}
 
-	fmt.Println("Email Sent to address: " + recipient.Email)
-	fmt.Println(result)
-
+	log.Printf("Email Sent to address: %s", recipient.Email)
+	log.Printf("%s", result)
 	return nil
 }
+
+// func (es EmailService) SendAssignmentEmails(groupMembers map[types.GroupMember]types.GroupMember) error { // todo
+// 	return nil
+// }
