@@ -23,6 +23,10 @@ type JoinGroupDetails struct {
 	GroupId string `json:"groupId"`
 }
 
+type AssignmentRestrictions struct {
+	Restrictions string `json:"restrictions"`
+}
+
 func NewGroupMember(name string, email string) GroupMember {
 	return GroupMember{
 		Name:  name,

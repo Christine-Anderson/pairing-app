@@ -7,6 +7,7 @@ import (
 	"lambda/database"
 	"lambda/email"
 	"lambda/util"
+	"log"
 	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -14,12 +15,11 @@ import (
 )
 
 func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	fmt.Printf("Processing request data for request %s.\n", request.RequestContext.RequestID)
-	fmt.Printf("Body size = %d.\n", len(request.Body))
-
-	fmt.Println("Headers:")
+	log.Printf("Processing request data for request %s.\n", request.RequestContext.RequestID)
+	log.Printf("Body = %s.\n", request.Body)
+	log.Println("Headers:")
 	for key, value := range request.Headers {
-		fmt.Printf("    %s: %s\n", key, value)
+		log.Printf("    %s: %s\n", key, value)
 	}
 
 	db := database.NewDynamoDB("MyGroupTable")
@@ -39,8 +39,8 @@ func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 		return apiHandler.JoinGroup(request)
 	case "/group-details/{groupId}":
 		return apiHandler.GroupDetails(request)
-	case "/match":
-		return apiHandler.PerformMatching(request)
+	case "/assign/{groupId}":
+		return apiHandler.GenerateAssignments(request)
 	default:
 		return util.ErrorResponse("Resource Not found", http.StatusNotFound), fmt.Errorf("resource not found")
 	}

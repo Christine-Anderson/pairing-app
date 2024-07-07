@@ -45,8 +45,8 @@ export class PairingAppStack extends cdk.Stack {
         joinGroupResource.addMethod("POST", integration);
 
         const groupDetailsResource = api.root.addResource("group-details");
-        const groupIdResource = groupDetailsResource.addResource("{groupId}");
-        groupIdResource.addMethod("GET", integration, 
+        const groupIdDetailsResource = groupDetailsResource.addResource("{groupId}");
+        groupIdDetailsResource.addMethod("GET", integration, 
             {
                 requestParameters: {
                     "method.request.path.groupId": true,
@@ -55,7 +55,15 @@ export class PairingAppStack extends cdk.Stack {
             }
         );
 
-        const performMatchingResource = api.root.addResource("match");
-        performMatchingResource.addMethod("GET", integration);
+        const performAssignmentResource = api.root.addResource("assign");
+        const groupIdAssignmentResource = performAssignmentResource.addResource("{groupId}");
+        groupIdAssignmentResource.addMethod("POST", integration, 
+            {
+                requestParameters: {
+                    "method.request.path.groupId": true,
+                    "method.request.querystring.jwt": true, 
+                },
+            }
+        );
     }
 }
