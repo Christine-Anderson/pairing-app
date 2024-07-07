@@ -11,7 +11,6 @@ import (
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/joho/godotenv"
 )
 
 func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -21,11 +20,6 @@ func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 	fmt.Println("Headers:")
 	for key, value := range request.Headers {
 		fmt.Printf("    %s: %s\n", key, value)
-	}
-
-	envErr := godotenv.Load()
-	if envErr != nil {
-		return util.ErrorResponse("Internal Server Error: "+envErr.Error(), http.StatusInternalServerError), envErr
 	}
 
 	db := database.NewDynamoDB("MyGroupTable")
@@ -48,7 +42,7 @@ func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 	case "/match":
 		return apiHandler.PerformMatching(request)
 	default:
-		return util.ErrorResponse("Resource Not found", http.StatusNotFound), fmt.Errorf("Resource Not Found")
+		return util.ErrorResponse("Resource Not found", http.StatusNotFound), fmt.Errorf("resource not found")
 	}
 }
 
