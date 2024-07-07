@@ -76,7 +76,7 @@ func (client DynamoDBClient) FetchGroupById(groupId string) (types.Group, error)
 	return group, nil
 }
 
-func (client DynamoDBClient) AddGroupMember(groupId string, newMemberName string, newMemberEmail string) error {
+func (client DynamoDBClient) AddGroupMember(groupId string, newMemberId string, newMemberName string, newMemberEmail string) error {
 	input := &dynamodb.UpdateItemInput{
 		TableName: aws.String(client.tableName),
 		Key: map[string]*dynamodb.AttributeValue{
@@ -89,8 +89,9 @@ func (client DynamoDBClient) AddGroupMember(groupId string, newMemberName string
 			":m": {
 				L: []*dynamodb.AttributeValue{
 					{M: map[string]*dynamodb.AttributeValue{
-						"name":  {S: aws.String(newMemberName)},
-						"email": {S: aws.String(newMemberEmail)},
+						"memberId": {S: aws.String(newMemberId)},
+						"name":     {S: aws.String(newMemberName)},
+						"email":    {S: aws.String(newMemberEmail)},
 					}},
 				},
 			},

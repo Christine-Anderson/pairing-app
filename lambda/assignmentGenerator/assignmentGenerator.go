@@ -6,32 +6,7 @@ import (
 	"lambda/util"
 	"log"
 	"math/rand"
-	"strings"
 )
-
-func getDisallowedAssignments(assignments map[string]string, restrictions string) map[string][]string {
-	disallowedAssignments := make(map[string][]string)
-
-	parts := strings.Split(restrictions, ";")
-
-	for _, part := range parts {
-		disallowedAssignment := strings.Split(part, ",")
-		if len(disallowedAssignment) == 2 {
-			giver := strings.TrimSpace(disallowedAssignment[0])
-			receiver := strings.TrimSpace(disallowedAssignment[1])
-
-			_, ok0 := assignments[giver]
-			_, ok1 := assignments[receiver]
-			if ok0 && ok1 {
-				log.Printf("Adding restriction: %s cannot give to %s\n", giver, receiver)
-				disallowedAssignments[giver] = append(disallowedAssignments[giver], receiver)
-			}
-		}
-	}
-
-	log.Printf("Disallowed assignments calculated: %s", disallowedAssignments)
-	return disallowedAssignments
-}
 
 func isAssignmentAllowed(giver string, receiver string, disallowedAssignments map[string][]string) bool {
 	value, ok := disallowedAssignments[giver]
@@ -100,18 +75,16 @@ func backtrackAssign(currAssignment map[string]string, disallowedAssignments map
 	return false
 }
 
-func GenerateAssignments(group types.Group, restrictions string) (map[string]string, error) {
+func GenerateAssignments(group types.Group, restrictions map[string][]string) (map[string]string, error) {
 	assignments := make(map[string]string)
 
 	var unassignedReceivers []string
 	for _, member := range group.GroupMembers {
-		assignments[member.Name] = ""
-		unassignedReceivers = append(unassignedReceivers, member.Name)
+		assignments[member.MemberId] = ""
+		unassignedReceivers = append(unassignedReceivers, member.MemberId)
 	}
 
-	disallowedAssignments := getDisallowedAssignments(assignments, restrictions)
-
-	if backtrackAssign(assignments, disallowedAssignments, unassignedReceivers) {
+	if backtrackAssign(assignments, restrictions, unassignedReceivers) {
 		return assignments, nil
 	} else {
 		return assignments, fmt.Errorf("no valid assignments")

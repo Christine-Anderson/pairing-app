@@ -103,7 +103,8 @@ func (handler ApiHandler) CreateGroup(request events.APIGatewayProxyRequest) (ev
 	}
 
 	groupId := uuid.New()
-	newGroup := types.NewGroup(groupId.String(), groupDetails)
+	memberId := uuid.New()
+	newGroup := types.NewGroup(memberId.String(), groupId.String(), groupDetails)
 	dbErr := handler.databaseStore.AddGroup(newGroup)
 	if dbErr != nil {
 		return util.ErrorResponse("Error adding group to database: "+dbErr.Error(), http.StatusInternalServerError), dbErr
@@ -133,7 +134,8 @@ func (handler ApiHandler) JoinGroup(request events.APIGatewayProxyRequest) (even
 		return util.ErrorResponse("Error fetching group from database: "+dbFetchErr.Error(), http.StatusInternalServerError), dbFetchErr
 	}
 
-	dbUpdateErr := handler.databaseStore.AddGroupMember(groupDetails.GroupId, groupDetails.Name, groupDetails.Email)
+	memberId := uuid.New()
+	dbUpdateErr := handler.databaseStore.AddGroupMember(groupDetails.GroupId, memberId.String(), groupDetails.Name, groupDetails.Email)
 	if dbUpdateErr != nil {
 		return util.ErrorResponse("Error updating group in database: "+dbUpdateErr.Error(), http.StatusInternalServerError), dbUpdateErr
 	}
