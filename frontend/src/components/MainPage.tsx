@@ -5,9 +5,9 @@ import JoinGroupForm from './JoinGroupForm';
 import CenteredTabs from './CenteredTabs';
 
 const MainPage = () => {
-    const [tabValue, setTabValue] = React.useState(0);
+    const [tabValue, setTabValue] = React.useState<number>(0);
 
-    const handleChange = (event, newValue) => {
+    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setTabValue(newValue);
     };
 

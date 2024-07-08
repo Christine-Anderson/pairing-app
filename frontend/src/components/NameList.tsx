@@ -8,13 +8,17 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 
-const NameList = ({names}) => {
-    const [selectedValues, setSelectedValues] = useState({});
+interface NameListProps {
+    names: string[];
+}
 
-    const handleChange = (name, event) => {
+const NameList: React.FC<NameListProps> = ({ names }) => {
+    const [selectedValues, setSelectedValues] = useState<{ [key: string]: string[] }>({});
+
+    const handleChange = (name: string, event: React.ChangeEvent<{ value: unknown }>) => {
         setSelectedValues(prev => ({
             ...prev,
-            [name]: event.target.value
+            [name]: event.target.value as string[]
         }));
     };
 
@@ -33,8 +37,8 @@ const NameList = ({names}) => {
                             <Select
                                 multiple
                                 value={selectedValues[name] || []}
-                                onChange={(event) => handleChange(name, event)}
-                                renderValue={(selected) => selected.join(', ')}
+                                onChange={(event) => handleChange(name, event as React.ChangeEvent<{ value: unknown }>)}
+                                renderValue={(selected) => (selected).join(', ')}
                                 style={{ minWidth: '9em' }}
                             >
                                 {names.filter(option => option !== name).map((option, idx) => (

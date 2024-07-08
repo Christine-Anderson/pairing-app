@@ -1,4 +1,3 @@
-import React from 'react';
 import BasicAppBar from './BasicAppBar';
 import Typography from '@mui/material/Typography';
 import NameList from './NameList';

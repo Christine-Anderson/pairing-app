@@ -2,7 +2,7 @@ import React from 'react';
 import { TextField, Button, Grid, Paper, Typography } from '@mui/material';
 
 const JoinGroupForm = () => {
-    const handleSubmit = (event) => {
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         // todo submit form
     };
