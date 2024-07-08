@@ -20,7 +20,7 @@ const GroupDetailsPage = () => {
                     Put an explanation here.
                 </Typography>
             </div>
-            <div style={{ flex: '1 1 auto', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '1rem' }}>
+            <div style={{ flex: '1 1 auto', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <NameList names={names}/>
             </div>
         </div>

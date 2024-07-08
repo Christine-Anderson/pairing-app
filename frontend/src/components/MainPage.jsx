@@ -19,7 +19,7 @@ const MainPage = () => {
             <div style={{ flex: '0 0 auto' }}>
                 <CenteredTabs value={tabValue} onChange={handleChange}/>
             </div>
-            <div style={{ flex: '1 1 auto', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '16px' }}>
+            <div style={{ flex: '1 1 auto', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 {tabValue === 0 ? <CreateGroupForm /> : <JoinGroupForm />}
             </div>
         </div>

@@ -10,7 +10,7 @@ const CreateGroupForm = () => {
     return (
         <Grid container justifyContent="center" alignItems="center">
             <Grid item xs={10} sm={8} md={6} lg={4}>
-                <Paper elevation={3} style={{ padding: '20px' }}>
+                <Paper elevation={3} style={{ padding: '2rem' }}>
                     <Typography variant="h5" gutterBottom>
                         Create a Group
                     </Typography>

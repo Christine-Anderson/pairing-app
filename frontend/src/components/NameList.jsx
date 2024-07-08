@@ -29,7 +29,7 @@ const NameList = ({names}) => {
                 {names.map((name, index) => (
                     <ListItem key={index}>
                         <ListItemText primary={name} />
-                        <FormControl style={{ minWidth: '12em', marginLeft: '1em' }}>
+                        <FormControl style={{ minWidth: '12rem', marginLeft: '1rem' }}>
                             <Select
                                 multiple
                                 value={selectedValues[name] || []}
