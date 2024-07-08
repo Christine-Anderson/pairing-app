@@ -104,7 +104,7 @@ func (handler ApiHandler) CreateGroup(request events.APIGatewayProxyRequest) (ev
 
 	groupId := uuid.New()
 	memberId := uuid.New()
-	newGroup := types.NewGroup(memberId.String(), groupId.String(), groupDetails)
+	newGroup := types.NewGroup(groupId.String(), memberId.String(), groupDetails)
 	dbErr := handler.databaseStore.AddGroup(newGroup)
 	if dbErr != nil {
 		return util.ErrorResponse("Error adding group to database: "+dbErr.Error(), http.StatusInternalServerError), dbErr
@@ -187,11 +187,10 @@ func (handler ApiHandler) GenerateAssignments(request events.APIGatewayProxyRequ
 		return util.ErrorResponse("Error generating assignments: "+assignErr.Error(), http.StatusBadRequest), assignErr
 	}
 
-	// handler.emailService.SendAssignmentEmails(assignments) todo
-	log.Printf("Assignments generated successfully: %s", assignments)
+	handler.emailService.SendAssignmentEmails(assignments, groupDetails)
 
 	return events.APIGatewayProxyResponse{
-		Body:       "test",
+		Body:       "Assignments generated successfully. Group members have been emailed the results.",
 		StatusCode: http.StatusOK,
 	}, nil
 }
