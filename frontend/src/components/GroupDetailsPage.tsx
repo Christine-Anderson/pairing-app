@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography';
 import NameList from './NameList';
 
 const GroupDetailsPage = () => {
-    const groupName = "Example Group"
+    const groupName = "My Group"
     const names = ["Jane", "John", "Alice", "Bob"];
 
     return (
@@ -11,16 +11,13 @@ const GroupDetailsPage = () => {
             <div style={{ flex: '0 0 auto' }}>
                 <BasicAppBar />
             </div>
-            <div style={{ flex: '0 0 auto', padding: '2rem' }}>
+            <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '2rem' }}>
                 <Typography variant="h4" align="center" gutterBottom>
                     {groupName}
                 </Typography>
-                <Typography variant="subtitle1" align="center" gutterBottom>
-                    Put an explanation here.
-                </Typography>
-            </div>
-            <div style={{ flex: '1 1 auto', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <NameList names={names}/>
+                <div style={{ marginTop: '1rem', width: '100%' }}>
+                    <NameList names={names}/>
+                </div>
             </div>
         </div>
     );

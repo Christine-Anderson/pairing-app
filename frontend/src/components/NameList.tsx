@@ -7,12 +7,13 @@ import Paper from '@mui/material/Paper';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import Typography from '@mui/material/Typography';
 
 interface NameListProps {
     names: string[];
 }
 
-const NameList: React.FC<NameListProps> = ({ names }) => {
+const NameList = ({names}: NameListProps) => {
     const [selectedValues, setSelectedValues] = useState<{ [key: string]: string[] }>({});
 
     const handleChange = (name: string, event: React.ChangeEvent<{ value: unknown }>) => {
@@ -29,6 +30,9 @@ const NameList: React.FC<NameListProps> = ({ names }) => {
 
     return (
         <Paper elevation={3} style={{ padding: '1rem', maxWidth: '20rem', margin: 'auto' }}>
+            <Typography variant="subtitle1" align="center" gutterBottom>
+                Please include any restrictions in who the participants can be paired with.
+            </Typography>
             <List>
                 {names.map((name, index) => (
                     <ListItem key={index}>
@@ -51,7 +55,7 @@ const NameList: React.FC<NameListProps> = ({ names }) => {
             </List>
             <div style={{ textAlign: 'center', marginTop: '1em' }}>
                 <Button variant="contained" color="primary" onClick={handleButtonClick}>
-                    Submit
+                    Pair
                 </Button>
             </div>
         </Paper>

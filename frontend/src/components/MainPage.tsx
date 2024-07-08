@@ -16,11 +16,11 @@ const MainPage = () => {
             <div style={{ flex: '0 0 auto' }}>
                 <BasicAppBar />
             </div>
-            <div style={{ flex: '0 0 auto' }}>
+            <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '2rem' }}>
                 <CenteredTabs value={tabValue} onChange={handleChange}/>
-            </div>
-            <div style={{ flex: '1 1 auto', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                {tabValue === 0 ? <CreateGroupForm /> : <JoinGroupForm />}
+                <div style={{ marginTop: '1rem', width: '100%' }}>
+                    {tabValue === 0 ? <CreateGroupForm /> : <JoinGroupForm />}
+                </div>
             </div>
         </div>
     );

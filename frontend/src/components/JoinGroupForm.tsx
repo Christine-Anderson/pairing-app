@@ -46,7 +46,7 @@ const JoinGroupForm = () => {
                             </Grid>
                             <Grid item xs={12}>
                                 <Button type="submit" variant="contained" color="primary">
-                                    Create Group
+                                    Submit
                                 </Button>
                             </Grid>
                         </Grid>
