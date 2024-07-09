@@ -25,3 +25,20 @@ export interface JoinGroupAPIResponse {
     groupId: string;
     groupName: string;
 }
+
+export interface GroupDetailsAPIRequest {
+    groupId: string;
+    jwt: string;
+}
+
+export interface GroupMember {
+    memberId: string;
+    name: string;
+    email: string;
+}
+
+export interface GroupDetailsAPIResponse {
+    groupId: string;
+    groupName: string;
+    groupMembers: GroupMember[];
+}

@@ -1,4 +1,4 @@
-import { JoinGroupAPIRequest, JoinGroupAPIResponse } from "./APITypes";
+import { JoinGroupAPIRequest, JoinGroupAPIResponse } from "../types";
 
 const submitJoinGroup = async ({name, email, groupId}: JoinGroupAPIRequest): Promise<JoinGroupAPIResponse> => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access

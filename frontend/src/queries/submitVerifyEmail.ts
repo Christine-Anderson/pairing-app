@@ -1,4 +1,4 @@
-import { VerifyEmailAPIRequest, VerifyEmailAPIResponse } from "./APITypes";
+import { VerifyEmailAPIRequest, VerifyEmailAPIResponse } from "../types";
 
 const submitVerifyEmail = async ({email}: VerifyEmailAPIRequest): Promise<VerifyEmailAPIResponse> => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access

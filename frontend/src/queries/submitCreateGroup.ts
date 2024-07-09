@@ -1,4 +1,4 @@
-import { CreateGroupAPIRequest, CreateGroupAPIResponse } from "./APITypes";
+import { CreateGroupAPIRequest, CreateGroupAPIResponse } from "../types";
 
 const submitCreateGroup = async ({name, email, groupName}: CreateGroupAPIRequest): Promise<CreateGroupAPIResponse> => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
