@@ -1,6 +1,6 @@
-import { VerifyEmailAPIRequest, VerifyEmailAPIResponse } from "../types";
+import { VerifyEmailAPI } from "../types";
 
-const submitVerifyEmail = async ({email}: VerifyEmailAPIRequest): Promise<VerifyEmailAPIResponse> => {
+const submitVerifyEmail = async ({email}: VerifyEmailAPI): Promise<VerifyEmailAPI> => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const BASE_URL = import.meta.env.VITE_BASE_URL as string;
 
@@ -18,7 +18,7 @@ const submitVerifyEmail = async ({email}: VerifyEmailAPIRequest): Promise<Verify
             body: JSON.stringify(requestBody)
         }
     )
-    const result = await response.json() as VerifyEmailAPIResponse;
+    const result = await response.json() as VerifyEmailAPI;
 
     if (!response.ok) {
         throw new Error(`Error verifying email ${email}.`);

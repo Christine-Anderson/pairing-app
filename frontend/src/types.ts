@@ -1,8 +1,4 @@
-export interface VerifyEmailAPIRequest {
-    email: string;
-}
-
-export interface VerifyEmailAPIResponse {
+export interface VerifyEmailAPI {
     email: string;
 }
 
@@ -11,17 +7,14 @@ export interface CreateGroupAPIRequest {
     email: string;
     groupName: string;
 }
-export interface CreateGroupAPIResponse {
-    groupId: string;
-    groupName: string;
-}
 
 export interface JoinGroupAPIRequest {
     name: string;
     email: string;
     groupId: string;
 }
-export interface JoinGroupAPIResponse {
+
+export interface GroupAPIResponse {
     groupId: string;
     groupName: string;
 }
@@ -41,4 +34,12 @@ export interface GroupDetailsAPIResponse {
     groupId: string;
     groupName: string;
     groupMembers: GroupMember[];
+}
+
+export interface GenerateAssignmentsAPIRequest {
+    groupId: string;
+    jwt: string;
+    restrictions: {
+        [key: string]: string[];
+    };
 }
