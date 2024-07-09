@@ -138,13 +138,13 @@ func (es EmailService) SendAssignmentEmails(assignments map[string]string, group
 		htmlBody := fmt.Sprintf(
 			`<p>Hi %s,</p>
 			<p>The PairWise group <b>%s</b> with group ID <b>%s</b> has generated assignments.</p>
-			<p>You were paired with %s</p>
+			<p>You were paired with %s.</p>
 			<p>Happy pairing!</p>`, memberMap[giver].Name, group.GroupName, group.GroupId, memberMap[receiver].Name)
 
 		textBody := fmt.Sprintf(
 			`Hi %s,\n
 			The PairWise group %s with group ID %s has generated assignments.\n
-			You were paired with %s\n
+			You were paired with %s.\n
 			Happy pairing!`, memberMap[giver].Name, group.GroupName, group.GroupId, memberMap[receiver].Name)
 
 		input := generateMailInput(memberMap[giver].Email, SUBJECT_ASSIGNMENTS, htmlBody, textBody)
