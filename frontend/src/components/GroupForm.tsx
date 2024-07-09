@@ -1,18 +1,35 @@
 import { TextField, Button, Grid, Paper, Typography } from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
+
+import submitCreateGroup from "../queries/submitCreateGroup";
 
 interface GroupFormProps {
     groupIdentifier: string;
     label: string;
 }
+
 const GroupForm = ({groupIdentifier, label}: GroupFormProps) => {
+    const submitCreateGroupMutation = useMutation(submitCreateGroup, {
+        onSuccess: (data) => {
+            console.log('Mutation success:', data);
+        },
+        onError: (error: Error) => {
+            console.error('Mutation error:', error.message);
+        },
+    });
+
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget)
-        const name = formData.get("name");
-        const email = formData.get("email");
-        const group = formData.get(groupIdentifier);
-
+        const name = formData.get("name") as string;
+        const email = formData.get("email") as string;
+        const group = formData.get(groupIdentifier) as string;
+        
         console.log('Form Data:', { name, email, group });
+        if (groupIdentifier === "groupName") {
+            submitCreateGroupMutation.mutate({ name, email, groupName: group })
+        }
+
         event.currentTarget.reset();
     };
 
