@@ -3,6 +3,7 @@ import { Construct } from "constructs";
 import * as apigateway from "aws-cdk-lib/aws-apigateway";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as path from "path";
 
 export class PairingAppStack extends cdk.Stack {
@@ -17,12 +18,23 @@ export class PairingAppStack extends cdk.Stack {
             tableName: "MyGroupTable"
         });
 
+        const sesPolicyStatement = new iam.PolicyStatement({
+            effect: iam.Effect.ALLOW,
+            actions: [
+                "ses:SendEmail",
+                "ses:SendRawEmail",
+                "ses:VerifyEmailIdentity"
+            ],
+            resources: ["*"]
+        });
+
         const myFunction = new lambda.Function(this, "myLambdaFunction", {
             runtime: lambda.Runtime.PROVIDED_AL2023,
             handler: "main",
             code: lambda.Code.fromAsset(path.join(__dirname, "../lambda/function.zip")),
         });
 
+        myFunction.addToRolePolicy(sesPolicyStatement);
         table.grantReadWriteData(myFunction)
 
         const api = new apigateway.RestApi(this, "myApiGateway", {
