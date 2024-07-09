@@ -1,15 +1,25 @@
-import { TextField, Button, Grid, Paper, Typography } from '@mui/material';
+import { TextField, Button, Grid, Paper, Typography } from "@mui/material";
 
-const CreateGroupForm = () => {
+interface GroupFormProps {
+    groupIdentifier: string;
+    label: string;
+}
+const GroupForm = ({groupIdentifier, label}: GroupFormProps) => {
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        // todo submit form
+        const formData = new FormData(event.currentTarget)
+        const name = formData.get("name");
+        const email = formData.get("email");
+        const group = formData.get(groupIdentifier);
+
+        console.log('Form Data:', { name, email, group });
+        event.currentTarget.reset();
     };
 
     return (
         <Grid container justifyContent="center" alignItems="center">
             <Grid item xs={10} sm={8} md={6} lg={4}>
-                <Paper elevation={3} style={{ padding: '2rem' }}>
+                <Paper elevation={3} style={{ padding: "2rem" }}>
                     <Typography variant="h5" gutterBottom>
                         Create a Group
                     </Typography>
@@ -20,6 +30,7 @@ const CreateGroupForm = () => {
                                     fullWidth
                                     required
                                     id="name"
+                                    name="name"
                                     label="Name"
                                     variant="outlined"
                                 />
@@ -29,6 +40,7 @@ const CreateGroupForm = () => {
                                     fullWidth
                                     required
                                     id="email"
+                                    name="email"
                                     label="Email"
                                     variant="outlined"
                                     type="email"
@@ -38,8 +50,9 @@ const CreateGroupForm = () => {
                                 <TextField
                                     fullWidth
                                     required
-                                    id="groupName"
-                                    label="Group Name"
+                                    id={groupIdentifier}
+                                    name={groupIdentifier}
+                                    label={label}
                                     variant="outlined"
                                 />
                             </Grid>
@@ -56,4 +69,4 @@ const CreateGroupForm = () => {
     );
 }
 
-export default CreateGroupForm;
+export default GroupForm;
