@@ -189,8 +189,5 @@ func (handler ApiHandler) GenerateAssignments(request events.APIGatewayProxyRequ
 
 	handler.emailService.SendAssignmentEmails(assignments, groupDetails)
 
-	return events.APIGatewayProxyResponse{
-		Body:       "Assignments generated successfully. Group members have been emailed the results.",
-		StatusCode: http.StatusOK,
-	}, nil
+	return groupSuccessResponse(groupDetails.GroupId, groupDetails.GroupName)
 }
