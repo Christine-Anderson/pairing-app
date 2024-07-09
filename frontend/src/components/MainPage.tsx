@@ -15,12 +15,7 @@ const MainPage = () => {
     };
 
     const handleVerifyEmail = () => {
-        // todo api call
-        setEmailVerified(true);
-        setTabValue(1);
-    };
-
-    const handleAlreadyVerifiedEmail = () => {
+        console.log("set to verified")
         setEmailVerified(true);
         setTabValue(1);
     };
@@ -36,7 +31,6 @@ const MainPage = () => {
                     {tabValue === 0 && !emailVerified && (
                         <EmailVerificationForm
                             onVerify={handleVerifyEmail}
-                            onAlreadyVerified={handleAlreadyVerifiedEmail}
                         />
                     )}
                     {(tabValue === 1 || tabValue === 2 || emailVerified) && (

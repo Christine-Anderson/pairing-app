@@ -1,20 +1,30 @@
 import React from "react";
 import { Button, TextField, Grid, Paper, Typography } from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
+
+import submitVerifyEmail from "../queries/submitVerifyEmail";
 
 interface EmailVerificationFormProps {
     onVerify: () => void;
-    onAlreadyVerified: () => void
 }
 
-const EmailVerificationForm = ({ onVerify, onAlreadyVerified }: EmailVerificationFormProps) => {
+const EmailVerificationForm = ({ onVerify }: EmailVerificationFormProps) => {
+    const submitVerifyEmailMutation = useMutation(submitVerifyEmail, {
+        onSuccess: (data) => {
+            onVerify();
+            // todo 
+            console.log(data)
+        },
+        onError: (error: Error) => {
+            console.log(error.message);
+        },
+    });
+
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        // todo
-        onVerify();
-    };
-
-    const handleAlreadyVerified = () => {
-        onAlreadyVerified();
+        const formData = new FormData(event.currentTarget)
+        const email = formData.get("email") as string;
+        submitVerifyEmailMutation.mutate({email})
     };
 
     return (
@@ -43,7 +53,7 @@ const EmailVerificationForm = ({ onVerify, onAlreadyVerified }: EmailVerificatio
                                 </Button>
                             </Grid>
                             <Grid item xs={6}>
-                                <Button variant="outlined" color="primary" onClick={handleAlreadyVerified}>
+                                <Button variant="outlined" color="primary" onClick={onVerify}>
                                     Already Verified
                                 </Button>
                             </Grid>
