@@ -71,23 +71,23 @@ func successResponse(responseBody any) (events.APIGatewayProxyResponse, error) {
 }
 
 func (handler ApiHandler) VerifyEmail(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	var groupDetails types.CreateGroupDetails
+	var verifyEmail types.VerifyEmailDetails
 
-	jsonErr := json.Unmarshal([]byte(request.Body), &groupDetails)
+	jsonErr := json.Unmarshal([]byte(request.Body), &verifyEmail)
 	if jsonErr != nil {
 		return util.ErrorResponse("Invalid Request: Error unmarshaling request body: "+jsonErr.Error(), http.StatusBadRequest), jsonErr
 	}
 
-	if !isValidEmail(groupDetails.Email) {
+	if !isValidEmail(verifyEmail.Email) {
 		return util.ErrorResponse("Invalid Request: Email is missing or invalid", http.StatusBadRequest), fmt.Errorf("email is missing or invalid")
 	}
 
-	verifErr := handler.emailService.SendVerificationEmail(groupDetails.Email)
+	verifErr := handler.emailService.SendVerificationEmail(verifyEmail.Email)
 	if verifErr != nil {
 		return util.ErrorResponse("Error verifying email: "+verifErr.Error(), http.StatusInternalServerError), verifErr
 	}
 
-	return verifyEmailSuccessResponse(groupDetails.Email)
+	return verifyEmailSuccessResponse(verifyEmail.Email)
 }
 
 func (handler ApiHandler) CreateGroup(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {

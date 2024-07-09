@@ -12,6 +12,10 @@ type Group struct {
 	GroupMembers []GroupMember `json:"groupMembers"`
 }
 
+type VerifyEmailDetails struct {
+	Email string `json:"email"`
+}
+
 type CreateGroupDetails struct {
 	Name      string `json:"name"`
 	Email     string `json:"email"`
