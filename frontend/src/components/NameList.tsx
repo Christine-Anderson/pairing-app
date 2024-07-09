@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
@@ -9,15 +10,35 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import LinearProgress from '@mui/material/LinearProgress';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 import { GroupMember } from "../types";
+import submitGenerateAssignments from "../queries/submitGenerateAssignments";
 
 interface NameListProps {
+    groupId: string;
+    jwt: string;
     groupMembers: GroupMember[];
     isLoading: boolean;
+    onGenerateAssignments: () => void;
 }
 
-const NameList = ({groupMembers, isLoading}: NameListProps) => {
+const NameList = ({groupId, jwt, groupMembers, isLoading, onGenerateAssignments}: NameListProps) => {
     const [selectedValues, setSelectedValues] = useState<{ [key: string]: string[] }>({});
+
+    const submitGenerateAssignmentsMutation = useMutation(submitGenerateAssignments, {
+        onSuccess: (data) => {
+            onGenerateAssignments();
+            console.log(data);
+        },
+        onError: (error: Error) => {
+            <Alert severity="error">
+                <AlertTitle>Error</AlertTitle>
+                {error.message}
+            </Alert>
+        },
+    });
+
     const handleChange = (memberId: string, event: React.ChangeEvent<{ value: unknown }>) => {
         const selectedIds = event.target.value as string[];
         setSelectedValues(prev => ({
@@ -25,17 +46,19 @@ const NameList = ({groupMembers, isLoading}: NameListProps) => {
             [memberId]: selectedIds,
         }));
     };
+
     const handleButtonClick = () => {
-        // todo form submission
+        submitGenerateAssignmentsMutation.mutate({groupId, jwt, restrictions: selectedValues});
         console.log("Selected IDs:", selectedValues);
     };
+
     return (
         <Paper elevation={3} style={{ padding: "1rem", maxWidth: "20rem", margin: "auto" }}>
             { isLoading && <LinearProgress/> }
             {
                 groupMembers && 
                 <Typography variant="subtitle1" align="center" gutterBottom>
-                    Please include any restrictions in who the participants can be paired with.
+                    Please indicate any restrictions in who the participants can be paired with.
                 </Typography>
             }
             <List>
@@ -70,7 +93,7 @@ const NameList = ({groupMembers, isLoading}: NameListProps) => {
             </List>
             <div style={{ textAlign: "center", marginTop: "1em" }}>
                 <Button variant="contained" color="primary" onClick={handleButtonClick}>
-                    Submit
+                    Generate Assignments
                 </Button>
             </div>
         </Paper>

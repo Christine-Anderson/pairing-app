@@ -14,7 +14,7 @@ const EmailVerificationForm = ({ onVerify, onAlreadyVerified }: EmailVerificatio
     const submitVerifyEmailMutation = useMutation(submitVerifyEmail, {
         onSuccess: (data) => {
             onVerify();
-            console.log(data)
+            console.log(data);
         },
         onError: (error: Error) => {
             <Alert severity="error">
