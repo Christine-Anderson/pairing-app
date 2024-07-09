@@ -1,6 +1,8 @@
 import React from "react";
 import { Button, TextField, Grid, Paper, Typography } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 
 import submitVerifyEmail from "../queries/submitVerifyEmail";
 
@@ -16,7 +18,10 @@ const EmailVerificationForm = ({ onVerify, onAlreadyVerified }: EmailVerificatio
             console.log(data)
         },
         onError: (error: Error) => {
-            console.log(error.message);
+            <Alert severity="error">
+                <AlertTitle>Error</AlertTitle>
+                {error.message}
+            </Alert>
         },
     });
 
