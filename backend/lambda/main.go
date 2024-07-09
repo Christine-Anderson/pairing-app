@@ -25,37 +25,6 @@ func addCorsHeaders(response events.APIGatewayProxyResponse) events.APIGatewayPr
 	return response
 }
 
-// func isOriginAllowed(origin string) bool {
-// 	allowedOrigins := []string{
-// 		"http://localhost:5173",
-// 	}
-
-// 	for _, allowedOrigin := range allowedOrigins {
-// 		if strings.HasPrefix(origin, allowedOrigin) {
-// 			return true
-// 		}
-// 	}
-// 	return false
-// }
-
-// func addCorsHeaders(response events.APIGatewayProxyResponse, request events.APIGatewayProxyRequest) events.APIGatewayProxyResponse {
-// 	if response.Headers == nil {
-// 		response.Headers = make(map[string]string)
-// 	}
-// 	response.Headers["Access-Control-Allow-Headers"] = "Content-Type"
-// 	response.Headers["Access-Control-Allow-Methods"] = "OPTIONS,GET,POST"
-
-// 	origin := request.Headers["Origin"]
-
-// 	if isOriginAllowed(origin) {
-// 		response.Headers["Access-Control-Allow-Origin"] = origin
-// 	} else {
-// 		response.Headers["Access-Control-Allow-Origin"] = ""
-// 	}
-
-// 	return response
-// }
-
 func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	log.Printf("Processing request data for request %s.\n", request.RequestContext.RequestID)
 	log.Printf("Body = %s.\n", request.Body)
