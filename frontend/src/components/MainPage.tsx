@@ -1,5 +1,4 @@
 import {useState} from "react";
-
 import BasicAppBar from "./BasicAppBar";
 import GroupForm from "./GroupForm";
 import CenteredTabs from "./CenteredTabs";

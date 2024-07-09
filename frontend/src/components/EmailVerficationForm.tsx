@@ -3,7 +3,6 @@ import { Button, TextField, Grid, Paper, Typography } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
-
 import submitVerifyEmail from "../queries/submitVerifyEmail";
 
 interface EmailVerificationFormProps {

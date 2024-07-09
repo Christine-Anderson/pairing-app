@@ -1,8 +1,8 @@
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import MainPage from './components/MainPage';
-import GroupDetailsPage from './components/GroupDetailsPage';
+import MainPage from "./components/MainPage";
+import GroupDetailsPage from "./components/GroupDetailsPage";
 
 const queryClient = new QueryClient();
 
