@@ -12,7 +12,7 @@ const App = () => {
             <BrowserRouter>
                 <Routes>
                     <Route path="/" element={<MainPage />} />
-                    <Route path="/group-details/:id" element={<GroupDetailsPage />} />
+                    <Route path="/group-details/:groupId" element={<GroupDetailsPage />} />
                 </Routes>
             </BrowserRouter>
         </QueryClientProvider>

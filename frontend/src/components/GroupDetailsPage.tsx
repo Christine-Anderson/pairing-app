@@ -1,15 +1,27 @@
+import { Navigate, useParams, useLocation } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import queryString from "query-string";
 import BasicAppBar from "./BasicAppBar";
 import Typography from "@mui/material/Typography";
 import NameList from "./NameList";
+import fetchGroupDetails from "../queries/fetchGroupDetails";
 
 const GroupDetailsPage = () => {
-    const groupName = "My Group"
-    const groupMembers = [
-        { id: "1", name: "Alice" },
-        { id: "2", name: "Bob" },
-        { id: "3", name: "Charlie" },
-        { id: "4", name: "David" },
-    ];
+    const {groupId} = useParams<{ groupId: string }>();
+    const location = useLocation();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    const { jwt } = queryString.parse(location.search) as { jwt: string };
+    const { data: groupDetails, isLoading, isError } = useQuery(
+        ["groupDetails", groupId],
+        () => fetchGroupDetails({ groupId: groupId || "", jwt })
+    );
+
+    if (!jwt || isError) {
+        return <Navigate to="/" />;
+    }
+
+    const groupName = groupDetails?.groupName || "My Group";
+    const groupMembers = groupDetails?.groupMembers || [];
 
     return (
         <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
@@ -21,7 +33,7 @@ const GroupDetailsPage = () => {
                     {groupName}
                 </Typography>
                 <div style={{ marginTop: "1rem", width: "100%" }}>
-                    <NameList groupMembers={groupMembers}/>
+                    <NameList groupMembers={groupMembers} isLoading={isLoading}/>
                 </div>
             </div>
         </div>
