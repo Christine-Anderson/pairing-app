@@ -6,13 +6,13 @@ import submitVerifyEmail from "../queries/submitVerifyEmail";
 
 interface EmailVerificationFormProps {
     onVerify: () => void;
+    onAlreadyVerified: () => void;
 }
 
-const EmailVerificationForm = ({ onVerify }: EmailVerificationFormProps) => {
+const EmailVerificationForm = ({ onVerify, onAlreadyVerified }: EmailVerificationFormProps) => {
     const submitVerifyEmailMutation = useMutation(submitVerifyEmail, {
         onSuccess: (data) => {
             onVerify();
-            // todo 
             console.log(data)
         },
         onError: (error: Error) => {
@@ -53,7 +53,7 @@ const EmailVerificationForm = ({ onVerify }: EmailVerificationFormProps) => {
                                 </Button>
                             </Grid>
                             <Grid item xs={6}>
-                                <Button variant="outlined" color="primary" onClick={onVerify}>
+                                <Button variant="outlined" color="primary" onClick={onAlreadyVerified}>
                                     Already Verified
                                 </Button>
                             </Grid>

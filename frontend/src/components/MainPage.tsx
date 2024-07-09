@@ -1,12 +1,15 @@
 import {useState} from "react";
+
 import BasicAppBar from "./BasicAppBar";
 import GroupForm from "./GroupForm";
 import CenteredTabs from "./CenteredTabs";
 import EmailVerificationForm from "./EmailVerficationForm";
+import AlertDialog from "./AlertDialog";
 
 const MainPage = () => {
     const [tabValue, setTabValue] = useState<number>(0);
     const [emailVerified, setEmailVerified] = useState<boolean>(false);
+    const [isVerifyEmailDialogOpen, setIsVerifyEmailDialogOpen] = useState<boolean>(false);
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         if (newValue === 0 || emailVerified) {
@@ -15,7 +18,17 @@ const MainPage = () => {
     };
 
     const handleVerifyEmail = () => {
-        console.log("set to verified")
+        setIsVerifyEmailDialogOpen(true);
+        setEmailVerified(true);
+        setTabValue(1);
+    };
+
+    const handleDialogClose = () => {
+        setIsVerifyEmailDialogOpen(false);
+    };
+
+    const handleAlreadyVerifiedEmail = () => {
+        console.log("already verified")
         setEmailVerified(true);
         setTabValue(1);
     };
@@ -31,6 +44,7 @@ const MainPage = () => {
                     {tabValue === 0 && !emailVerified && (
                         <EmailVerificationForm
                             onVerify={handleVerifyEmail}
+                            onAlreadyVerified={handleAlreadyVerifiedEmail}
                         />
                     )}
                     {(tabValue === 1 || tabValue === 2 || emailVerified) && (
@@ -41,6 +55,12 @@ const MainPage = () => {
                     )}
                 </div>
             </div>
+            <AlertDialog
+                open={isVerifyEmailDialogOpen}
+                onClose={handleDialogClose}
+                title="Please Verify Your Email"
+                description="You may need to wait up to 24 hours to receive a verification email."
+            />
         </div>
     );
 };
