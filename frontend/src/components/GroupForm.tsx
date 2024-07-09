@@ -1,20 +1,27 @@
 import { TextField, Button, Grid, Paper, Typography } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 
 import submitCreateGroup from "../queries/submitCreateGroup";
 
 interface GroupFormProps {
     groupIdentifier: string;
     label: string;
+    onSuccess: () => void;
 }
 
-const GroupForm = ({groupIdentifier, label}: GroupFormProps) => {
+const GroupForm = ({groupIdentifier, label, onSuccess}: GroupFormProps) => {
     const submitCreateGroupMutation = useMutation(submitCreateGroup, {
         onSuccess: (data) => {
-            console.log('Mutation success:', data);
+            onSuccess();
+            console.log(data);
         },
         onError: (error: Error) => {
-            console.error('Mutation error:', error.message);
+            <Alert severity="error">
+                <AlertTitle>Error</AlertTitle>
+                {error.message}
+            </Alert>
         },
     });
 
