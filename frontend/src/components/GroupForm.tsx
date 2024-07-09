@@ -4,6 +4,7 @@ import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 
 import submitCreateGroup from "../queries/submitCreateGroup";
+import submitJoinGroup from "../queries/submitJoinGroup";
 
 interface GroupFormProps {
     groupIdentifier: string;
@@ -25,16 +26,30 @@ const GroupForm = ({groupIdentifier, label, onSuccess}: GroupFormProps) => {
         },
     });
 
+    const submitJoinGroupMutation = useMutation(submitJoinGroup, {
+        onSuccess: (data) => {
+            onSuccess();
+            console.log(data);
+        },
+        onError: (error: Error) => {
+            <Alert severity="error">
+                <AlertTitle>Error</AlertTitle>
+                {error.message}
+            </Alert>
+        },
+    });
+
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const formData = new FormData(event.currentTarget)
+        const formData = new FormData(event.currentTarget);
         const name = formData.get("name") as string;
         const email = formData.get("email") as string;
         const group = formData.get(groupIdentifier) as string;
         
-        console.log('Form Data:', { name, email, group });
         if (groupIdentifier === "groupName") {
-            submitCreateGroupMutation.mutate({ name, email, groupName: group })
+            submitCreateGroupMutation.mutate({ name, email, groupName: group });
+        } else if (groupIdentifier === "groupId") {
+            submitJoinGroupMutation.mutate({ name, email, groupId: group })
         }
 
         event.currentTarget.reset();

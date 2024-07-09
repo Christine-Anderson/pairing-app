@@ -11,6 +11,7 @@ const MainPage = () => {
     const [emailVerified, setEmailVerified] = useState<boolean>(false);
     const [isVerifyEmailDialogOpen, setIsVerifyEmailDialogOpen] = useState<boolean>(false);
     const [isCreateGroupDialogOpen, setIsCreateGroupDialogOpen] = useState<boolean>(false);
+    const [isJoinGroupDialogOpen, setIsJoinGroupDialogOpen] = useState<boolean>(false);
 
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
         if (newValue === 0 || emailVerified) {
@@ -42,6 +43,14 @@ const MainPage = () => {
         setIsCreateGroupDialogOpen(false);
     };
 
+    const handleJoinGroupFormSubmit = () => {
+        setIsJoinGroupDialogOpen(true);
+    };
+
+    const handleJoinGroupDialogClose = () => {
+        setIsJoinGroupDialogOpen(false);
+    };
+
     return (
         <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
             <div style={{ flex: "0 0 auto" }}>
@@ -60,7 +69,7 @@ const MainPage = () => {
                         <GroupForm 
                             groupIdentifier={tabValue === 1 ? "groupName" : "groupId"}
                             label={tabValue === 1 ? "Group Name" : "Group ID"} 
-                            onSuccess={tabValue === 1 ? handleCreateGroupFormSubmit : () => {}}
+                            onSuccess={tabValue === 1 ? handleCreateGroupFormSubmit : handleJoinGroupFormSubmit}
                         />
                     )}
                 </div>
@@ -76,6 +85,12 @@ const MainPage = () => {
                 onClose={handleCreateGroupDialogClose}
                 title="Please Check Your Email"
                 description="You may need to wait up to 24 hours to receive an email with your group information."
+            />
+            <AlertDialog
+                open={isJoinGroupDialogOpen}
+                onClose={handleJoinGroupDialogClose}
+                title="You've Successfully Joined a Group"
+                description="You will receive an email with your match when the group organizer generates assignments."
             />
         </div>
     );

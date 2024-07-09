@@ -15,3 +15,13 @@ export interface CreateGroupAPIResponse {
     groupId: string;
     groupName: string;
 }
+
+export interface JoinGroupAPIRequest {
+    name: string;
+    email: string;
+    groupId: string;
+}
+export interface JoinGroupAPIResponse {
+    groupId: string;
+    groupName: string;
+}
