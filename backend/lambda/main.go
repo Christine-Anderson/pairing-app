@@ -14,6 +14,48 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
+func addCorsHeaders(response events.APIGatewayProxyResponse) events.APIGatewayProxyResponse {
+	if response.Headers == nil {
+		response.Headers = make(map[string]string)
+	}
+
+	response.Headers["Access-Control-Allow-Origin"] = "*"
+	response.Headers["Access-Control-Allow-Headers"] = "Content-Type"
+	response.Headers["Access-Control-Allow-Methods"] = "OPTIONS,GET,POST"
+	return response
+}
+
+// func isOriginAllowed(origin string) bool {
+// 	allowedOrigins := []string{
+// 		"http://localhost:5173",
+// 	}
+
+// 	for _, allowedOrigin := range allowedOrigins {
+// 		if strings.HasPrefix(origin, allowedOrigin) {
+// 			return true
+// 		}
+// 	}
+// 	return false
+// }
+
+// func addCorsHeaders(response events.APIGatewayProxyResponse, request events.APIGatewayProxyRequest) events.APIGatewayProxyResponse {
+// 	if response.Headers == nil {
+// 		response.Headers = make(map[string]string)
+// 	}
+// 	response.Headers["Access-Control-Allow-Headers"] = "Content-Type"
+// 	response.Headers["Access-Control-Allow-Methods"] = "OPTIONS,GET,POST"
+
+// 	origin := request.Headers["Origin"]
+
+// 	if isOriginAllowed(origin) {
+// 		response.Headers["Access-Control-Allow-Origin"] = origin
+// 	} else {
+// 		response.Headers["Access-Control-Allow-Origin"] = ""
+// 	}
+
+// 	return response
+// }
+
 func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	log.Printf("Processing request data for request %s.\n", request.RequestContext.RequestID)
 	log.Printf("Body = %s.\n", request.Body)
@@ -26,24 +68,30 @@ func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 	emailService, esErr := email.NewEmailService()
 
 	if esErr != nil {
-		return util.ErrorResponse("Internal Server Error: "+esErr.Error(), http.StatusInternalServerError), esErr
+		return addCorsHeaders(util.ErrorResponse("Internal Server Error: "+esErr.Error(), http.StatusInternalServerError)), esErr
 	}
 	apiHandler := api.NewApiHandler(db, emailService)
 
+	var response events.APIGatewayProxyResponse
+	var err error
+
 	switch request.Resource {
 	case "/verify-email":
-		return apiHandler.VerifyEmail(request)
+		response, err = apiHandler.VerifyEmail(request)
 	case "/create-group":
-		return apiHandler.CreateGroup(request)
+		response, err = apiHandler.CreateGroup(request)
 	case "/join-group":
-		return apiHandler.JoinGroup(request)
+		response, err = apiHandler.JoinGroup(request)
 	case "/group-details/{groupId}":
-		return apiHandler.GroupDetails(request)
+		response, err = apiHandler.GroupDetails(request)
 	case "/assign/{groupId}":
-		return apiHandler.GenerateAssignments(request)
+		response, err = apiHandler.GenerateAssignments(request)
 	default:
-		return util.ErrorResponse("Resource Not found", http.StatusNotFound), fmt.Errorf("resource not found")
+		return addCorsHeaders(util.ErrorResponse("Resource Not found", http.StatusNotFound)), fmt.Errorf("resource not found")
 	}
+
+	response = addCorsHeaders(response)
+	return response, err
 }
 
 func main() {

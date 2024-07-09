@@ -39,7 +39,7 @@ export class PairingAppStack extends cdk.Stack {
 
         const api = new apigateway.RestApi(this, "myApiGateway", {
             defaultCorsPreflightOptions: {
-                allowHeaders: ["Content-type", "Authorization"],
+                allowHeaders: ["Content-type", "Authorization", "Origin"],
                 allowMethods: ["GET", "POST"],
                 allowOrigins: ["*"]
             },
