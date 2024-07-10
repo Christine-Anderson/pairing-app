@@ -68,6 +68,7 @@ const MainPage = () => {
                         <GroupForm 
                             groupIdentifier={tabValue === 1 ? "groupName" : "groupId"}
                             label={tabValue === 1 ? "Group Name" : "Group ID"} 
+                            title={tabValue === 1 ? "Create a Group" : "Join a Group"} 
                             onSuccess={tabValue === 1 ? handleCreateGroupFormSubmit : handleJoinGroupFormSubmit}
                         />
                     )}

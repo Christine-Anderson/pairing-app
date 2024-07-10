@@ -8,10 +8,11 @@ import submitJoinGroup from "../queries/submitJoinGroup";
 interface GroupFormProps {
     groupIdentifier: string;
     label: string;
+    title: string;
     onSuccess: () => void;
 }
 
-const GroupForm = ({groupIdentifier, label, onSuccess}: GroupFormProps) => {
+const GroupForm = ({groupIdentifier, label, title, onSuccess}: GroupFormProps) => {
     const submitCreateGroupMutation = useMutation(submitCreateGroup, {
         onSuccess: (data) => {
             onSuccess();
@@ -59,7 +60,7 @@ const GroupForm = ({groupIdentifier, label, onSuccess}: GroupFormProps) => {
             <Grid item xs={10} sm={8} md={6} lg={4}>
                 <Paper elevation={3} style={{ padding: "2rem" }}>
                     <Typography variant="h5" gutterBottom>
-                        Create a Group
+                        {title}
                     </Typography>
                     <form onSubmit={handleSubmit}>
                         <Grid container spacing={2}>
