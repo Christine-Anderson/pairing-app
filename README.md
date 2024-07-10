@@ -1,7 +1,7 @@
 ## PairWise (Summer Of Shipping)
 
 ### Overview
-An app that allows you to generate assignments between pairs of people in a group following a given set of restrictions. It individually emails group members to keep the assignments secret. I made this to use with my family for our annual gift exchange. 
+An app that allows you to randomly generate assignments between group members following a given set of restrictions. It individually emails group members to keep the assignments secret. I made this to use with my family for our annual gift exchange. 
 
 ![Serverless Architecture Diagram](assets/pairing-app.png)
 
